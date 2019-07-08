@@ -10,7 +10,7 @@ public class UncertainRatePlatform extends Platform {
 	private double[][] LBPPayments;
 	private double[][] LBPFutureTotalPayments;
 			
-	public int M = 9981;
+	public int M = 99801;
 	
 	public UncertainRatePlatform(double thetaHigh, double thetaLow, double priorBelief, double rate, int N, double gamma, double delta, String distribution,
 			double[] parameters, String policy) {
@@ -100,7 +100,7 @@ public class UncertainRatePlatform extends Platform {
 		
 	}
 	
-	public void setExpectedFuturePostedPrice() {
+public void setExpectedFuturePostedPrice() {
 		
 		if(policy == "MBP") {
 			double[] MBPPayments = Payment.computeFullInformationValuesAndPayments(rate, N, gamma, costDistribution, costParameters).get("fullInformationPayments");
@@ -114,9 +114,9 @@ public class UncertainRatePlatform extends Platform {
 				expectedFutureTotalPaymentsAtNextState = 0;
 			}
 			double expectedFutureTotalPaymentsAtTheSameState = Payment.computeFutureTotalPayments(theta(newPessimisticBelief, thetaHigh, thetaLow), N, gamma, delta, costDistribution, costParameters, MBPPayments)[databases];
-			double expectedFutureTotalPaymentAtTheNextTime = transitionProbability*expectedFutureTotalPaymentsAtNextState+(1-transitionProbability)*expectedFutureTotalPaymentsAtTheSameState;
-			expectedFutureTotalPaymentAtTheNextTime *= delta;
-			double MBPFuturePostedPrice = transitionProbability*Price.computePostedPrice(delta, expectedFutureTotalPaymentAtTheNextTime, discountedPaymentsToSellersSoFar+currentPayment, discountedPaymentsFromBuyersSoFar);
+			double MBPFuturePostedPrice = transitionProbability*Price.computePostedPrice(delta, expectedFutureTotalPaymentsAtNextState, deficit+currentPayment);
+			MBPFuturePostedPrice += (1-transitionProbability)*Price.computePostedPrice(delta, expectedFutureTotalPaymentsAtTheSameState, deficit); 
+			MBPFuturePostedPrice *= delta;
 			this.expectedFuturePostedPrice = MBPFuturePostedPrice;
 		}
 		else if(policy == "LBP") {
